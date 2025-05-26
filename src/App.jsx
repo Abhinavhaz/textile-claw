@@ -163,6 +163,25 @@ console.log("editImg",response)
   }
 };
 
+const handleDownload = async (url, index) => {
+  try {
+    const response = await fetch(url, { mode: "cors" });
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = `generated-image-${index + 1}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("Image download failed:", error);
+    alert("Download failed. Try right-click → Save image as.");
+  }
+};
+
 
   return (
     <div className="container">
@@ -273,13 +292,13 @@ console.log("editImg",response)
                   }}
                 />
                 <div className="image-actions">
-                  <a
-                    href={url}
-                    download={`generated-image-${index + 1}.png`}
-                    className="download-button"
-                  >
-                    Download
-                  </a>
+                  <button
+  className="download-button"
+  onClick={() => handleDownload(url, index)}
+>
+  Download
+</button>
+
                   <button
                     className="edit-button"
                     onClick={() => handleEditClick(url, index)}
@@ -315,52 +334,57 @@ console.log("editImg",response)
         </div>
       )}
 
-      {showEditForm && (
-        <div className="form-card edit-form">
-          <h2 className="form-title">✏️ Edit Image</h2>
-          <form onSubmit={handleEditSubmit} className="form">
-            <div className="form-group">
-              <label htmlFor="edit-description">Edit Instructions:</label>
-              <input
-                id="edit-description"
-                name="description"
-                type="text"
-                placeholder="e.g., Make background blue"
-                required
-                value={editFormData.description}
-                onChange={handleEditChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Image to Edit:</label>
-              <img
-                src={selectedImage}
-                alt="Selected for editing"
-                className="edit-preview"
-              />
-            </div>
-
-            <div className="form-actions">
-              <button
-                type="button"
-                className="cancel-button"
-                onClick={() => setShowEditForm(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="submit-button"
-                disabled={editLoading}
-              >
-                {editLoading ? "Editing..." : "Submit Edit"}
-              </button>
-            </div>
-          </form>
-          {editError && <div className="error-message">{editError}</div>}
+     {showEditForm && (
+  <div className="modal-backdrop" onClick={() => setShowEditForm(false)}>
+    <div
+      className="modal-content"
+      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside modal
+    >
+      <h2 className="form-title">✏️ Edit Image</h2>
+      <form onSubmit={handleEditSubmit} className="form">
+        <div className="form-group">
+          <label htmlFor="edit-description">Edit Instructions:</label>
+          <input
+            id="edit-description"
+            name="description"
+            type="text"
+            placeholder="e.g., Make background blue"
+            required
+            value={editFormData.description}
+            onChange={handleEditChange}
+          />
         </div>
-      )}
+
+        <div className="form-group">
+          <label>Image to Edit:</label>
+          <img
+            src={selectedImage}
+            alt="Selected for editing"
+            className="edit-preview"
+          />
+        </div>
+
+        <div className="form-actions">
+          <button
+            type="button"
+            className="cancel-button"
+            onClick={() => setShowEditForm(false)}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={editLoading}
+          >
+            {editLoading ? "Editing..." : "Submit"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
