@@ -101,7 +101,7 @@ function App() {
     formDataToSend.append("image", selectedImage);
 
     try {
-      const response = await fetch("http://20.33.90.22:8000/edit_image", {
+      const response = await fetch("https://20.33.90.22:8000/edit_image", {
         method: "POST",
         body: formDataToSend,
       });
@@ -146,7 +146,7 @@ console.log("editImg",response)
    formData.append("rows", tileConfig.rows.toString());
     formData.append("cols", tileConfig.cols.toString());
 
-    const response = await fetch("http://20.33.90.22:8000/tile_image_grid", {
+    const response = await fetch("https://20.33.90.22:8000/tile_image_grid", {
       method: "POST",
       body: formData,
     });
