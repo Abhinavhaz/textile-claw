@@ -72,7 +72,7 @@ function App() {
     }
 
     try {
-      const response = await fetch("http://20.33.90.22:8000/create_image", {
+      const response = await fetch("https://20.33.90.22:8000/create_image", {
         method: "POST",
         body: formDataToSend,
       });
