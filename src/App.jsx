@@ -72,7 +72,7 @@ function App() {
     }
 
     try {
-      const response = await fetch("https://20.33.90.22:8000/create_image", {
+      const response = await fetch("https://textile-image-backend.onrender.com/api/create_image", {
         method: "POST",
         body: formDataToSend,
       });
@@ -101,7 +101,7 @@ function App() {
     formDataToSend.append("image", selectedImage);
 
     try {
-      const response = await fetch("https://20.33.90.22:8000/edit_image", {
+      const response = await fetch("https://textile-image-backend.onrender.com/api/edit_image", {
         method: "POST",
         body: formDataToSend,
       });
@@ -109,15 +109,15 @@ function App() {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-console.log("editImg",response)
+      console.log("editImg", response)
       const data = await response.json();
 
       // Replace the image at the correct index
-     setResponse((prev) => {
-  const updatedUrls = [...prev.cloudinary_urls];
-  updatedUrls[selectedImageIndex] = data.filename; // ✅ correct key
-  return { ...prev, cloudinary_urls: updatedUrls };
-});
+      setResponse((prev) => {
+        const updatedUrls = [...prev.cloudinary_urls];
+        updatedUrls[selectedImageIndex] = data.filename; // ✅ correct key
+        return { ...prev, cloudinary_urls: updatedUrls };
+      });
 
       setShowEditForm(false);
     } catch (err) {
@@ -135,52 +135,52 @@ console.log("editImg",response)
       description: "",
       image: imageUrl
     });
-  
+
     setShowEditForm(true);
   };
 
- const handleTileImage = async (imageUrl) => {
-  try {
-    const formData = new FormData();
-    formData.append("image", imageUrl); // Send URL directly
-   formData.append("rows", tileConfig.rows.toString());
-    formData.append("cols", tileConfig.cols.toString());
+  const handleTileImage = async (imageUrl) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", imageUrl); // Send URL directly
+      formData.append("rows", tileConfig.rows.toString());
+      formData.append("cols", tileConfig.cols.toString());
 
-    const response = await fetch("https://20.33.90.22:8000/tile_image_grid", {
-      method: "POST",
-      body: formData,
-    });
+      const response = await fetch("https://textile-image-backend.onrender.com/api/tile_image_grid", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const tiledImageUrl = data.filename;
+      window.open(tiledImageUrl, "_blank");
+    } catch (err) {
+      alert("Failed to tile image: " + err.message);
     }
+  };
 
-    const data = await response.json();
-    const tiledImageUrl = data.filename;
-    window.open(tiledImageUrl, "_blank");
-  } catch (err) {
-    alert("Failed to tile image: " + err.message);
-  }
-};
+  const handleDownload = async (url, index) => {
+    try {
+      const response = await fetch(url, { mode: "cors" });
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
 
-const handleDownload = async (url, index) => {
-  try {
-    const response = await fetch(url, { mode: "cors" });
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = `generated-image-${index + 1}.png`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error("Image download failed:", error);
-    alert("Download failed. Try right-click → Save image as.");
-  }
-};
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `generated-image-${index + 1}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Image download failed:", error);
+      alert("Download failed. Try right-click → Save image as.");
+    }
+  };
 
 
   return (
@@ -293,11 +293,11 @@ const handleDownload = async (url, index) => {
                 />
                 <div className="image-actions">
                   <button
-  className="download-button"
-  onClick={() => handleDownload(url, index)}
->
-  Download
-</button>
+                    className="download-button"
+                    onClick={() => handleDownload(url, index)}
+                  >
+                    Download
+                  </button>
 
                   <button
                     className="edit-button"
@@ -306,27 +306,27 @@ const handleDownload = async (url, index) => {
                     Edit
                   </button>
                   <input
-  type="number"
-  name="rows"
-  min="1"
-  value={tileConfig.rows}
-  onChange={(e) => setTileConfig({ ...tileConfig, rows: e.target.value })}
-/>
-<input
-  type="number"
-  name="cols"
-  min="1"
-  value={tileConfig.cols}
-  onChange={(e) => setTileConfig({ ...tileConfig, cols: e.target.value })}
-/>
+                    type="number"
+                    name="rows"
+                    min="1"
+                    value={tileConfig.rows}
+                    onChange={(e) => setTileConfig({ ...tileConfig, rows: e.target.value })}
+                  />
+                  <input
+                    type="number"
+                    name="cols"
+                    min="1"
+                    value={tileConfig.cols}
+                    onChange={(e) => setTileConfig({ ...tileConfig, cols: e.target.value })}
+                  />
 
 
                   <button
-    className="tile-button"
-    onClick={() => handleTileImage(url)}
-  >
-    Tile Image
-  </button>
+                    className="tile-button"
+                    onClick={() => handleTileImage(url)}
+                  >
+                    Tile Image
+                  </button>
                 </div>
               </div>
             ))}
@@ -334,56 +334,56 @@ const handleDownload = async (url, index) => {
         </div>
       )}
 
-     {showEditForm && (
-  <div className="modal-backdrop" onClick={() => setShowEditForm(false)}>
-    <div
-      className="modal-content"
-      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside modal
-    >
-      <h2 className="form-title">✏️ Edit Image</h2>
-      <form onSubmit={handleEditSubmit} className="form">
-        <div className="form-group">
-          <label htmlFor="edit-description">Edit Instructions:</label>
-          <input
-            id="edit-description"
-            name="description"
-            type="text"
-            placeholder="e.g., Make background blue"
-            required
-            value={editFormData.description}
-            onChange={handleEditChange}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Image to Edit:</label>
-          <img
-            src={selectedImage}
-            alt="Selected for editing"
-            className="edit-preview"
-          />
-        </div>
-
-        <div className="form-actions">
-          <button
-            type="button"
-            className="cancel-button"
-            onClick={() => setShowEditForm(false)}
+      {showEditForm && (
+        <div className="modal-backdrop" onClick={() => setShowEditForm(false)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside modal
           >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={editLoading}
-          >
-            {editLoading ? "Editing..." : "Submit"}
-          </button>
+            <h2 className="form-title">✏️ Edit Image</h2>
+            <form onSubmit={handleEditSubmit} className="form">
+              <div className="form-group">
+                <label htmlFor="edit-description">Edit Instructions:</label>
+                <input
+                  id="edit-description"
+                  name="description"
+                  type="text"
+                  placeholder="e.g., Make background blue"
+                  required
+                  value={editFormData.description}
+                  onChange={handleEditChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Image to Edit:</label>
+                <img
+                  src={selectedImage}
+                  alt="Selected for editing"
+                  className="edit-preview"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={() => setShowEditForm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={editLoading}
+                >
+                  {editLoading ? "Editing..." : "Submit"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
     </div>
   );
