@@ -25,6 +25,8 @@ function App() {
   const [selectedImage, setSelectedImage] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [tileConfig, setTileConfig] = useState({ rows: 3, cols: 4 });
+  const [tiledImages, setTiledImages] = useState({}); // new state
+
 
 
   const handleChange = (e) => {
@@ -139,8 +141,10 @@ function App() {
     setShowEditForm(true);
   };
 
-  const handleTileImage = async (imageUrl) => {
+  const handleTileImage = async (imageUrl,index) => {
     try {
+
+     setTiledImages((prev)=>({...prev,[index]:true}))
       const formData = new FormData();
       formData.append("image", imageUrl); // Send URL directly
       formData.append("rows", tileConfig.rows.toString());
@@ -158,8 +162,11 @@ function App() {
       const data = await response.json();
       const tiledImageUrl = data.filename;
       window.open(tiledImageUrl, "_blank");
+      
     } catch (err) {
       alert("Failed to tile image: " + err.message);
+    }finally{
+      setTiledImages((prev)=>({...prev,[index]:false}))
     }
   };
 
@@ -305,27 +312,31 @@ function App() {
                   >
                     Edit
                   </button>
+
+                  <label>Rows:
                   <input
                     type="number"
                     name="rows"
                     min="1"
                     value={tileConfig.rows}
                     onChange={(e) => setTileConfig({ ...tileConfig, rows: e.target.value })}
-                  />
+                  /></label>
+
+                  <label>Columns:
                   <input
                     type="number"
                     name="cols"
                     min="1"
                     value={tileConfig.cols}
                     onChange={(e) => setTileConfig({ ...tileConfig, cols: e.target.value })}
-                  />
+                  /></label>
 
 
                   <button
                     className="tile-button"
-                    onClick={() => handleTileImage(url)}
+                    onClick={() => handleTileImage(url,index)}
                   >
-                    Tile Image
+             {tiledImages[index] ? "Loading Tile Image..." : "Tile Image"}
                   </button>
                 </div>
               </div>
@@ -369,6 +380,7 @@ function App() {
                   type="button"
                   className="cancel-button"
                   onClick={() => setShowEditForm(false)}
+                  style={{color:"white",margin:"10px",backgroundColor:"red"}}
                 >
                   Cancel
                 </button>

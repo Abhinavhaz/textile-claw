@@ -92,7 +92,7 @@ button {
 
 .edit-button {
   background-color: #ffc107;
-  color: black;
+  color: rgb(0, 0, 0);
 }
 
 .tile-button {
