@@ -288,7 +288,7 @@ function App() {
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src =
-                      "https://via.placeholder.com/300x300?text=Image+Not+Found";
+                      "https://via.placeholder.com/100x100?text=Image+Not+Found";
                   }}
                 />
                 <div className="image-actions">
