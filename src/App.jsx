@@ -202,7 +202,7 @@ function App() {
   };
 
   return (
-    <div className="container">
+    <div className={`container ${response ? 'has-results' : ''}`}>
       <div className="form-card">
         <h2 className="form-title">🎨 Gemini AI Image Generator</h2>
         <form onSubmit={handleSubmit} className="form">
@@ -246,17 +246,21 @@ function App() {
 
           <div className="form-group">
             <label htmlFor="simplicity">Simplicity (1-10):</label>
-            <input
-              id="simplicity"
-              name="simplicity"
-              type="range"
-              min="1"
-              max="10"
-              required
-              value={formData.simplicity}
-              onChange={handleChange}
-            />
-            <span>{formData.simplicity}</span>
+            <div className="range-container">
+              <div className="range-input-wrapper">
+                <input
+                  id="simplicity"
+                  name="simplicity"
+                  type="range"
+                  min="1"
+                  max="10"
+                  required
+                  value={formData.simplicity}
+                  onChange={handleChange}
+                />
+                <span className="range-value">{formData.simplicity}</span>
+              </div>
+            </div>
           </div>
 
           <div className="form-group">
@@ -286,7 +290,14 @@ function App() {
           </div>
 
           <button type="submit" className="submit-button" disabled={loading}>
-            {loading ? "Generating..." : "Generate Images"}
+            {loading ? (
+              <>
+                <span className="loading-spinner"></span>
+                Generating...
+              </>
+            ) : (
+              "Generate Images"
+            )}
           </button>
         </form>
 
@@ -324,34 +335,44 @@ function App() {
                     Edit
                   </button>
 
-                  <label>Rows:
-                    <input
-                      type="number"
-                      name="rows"
-                      min="1"
-                      value={tileConfigs[index]?.rows || 3}
-                      onChange={(e) => handleTileConfigChange(index, "rows", parseInt(e.target.value))}
-                    />
+                  <div className="tile-inputs">
+                    <label>
+                      Rows:
+                      <input
+                        type="number"
+                        name="rows"
+                        min="1"
+                        value={tileConfigs[index]?.rows || 3}
+                        onChange={(e) => handleTileConfigChange(index, "rows", parseInt(e.target.value))}
+                      />
+                    </label>
 
-                  </label>
-
-                  <label>Columns:
-                    <input
-                      type="number"
-                      name="cols"
-                      min="1"
-                      value={tileConfigs[index]?.cols || 4}
-                      onChange={(e) => handleTileConfigChange(index, "cols", parseInt(e.target.value))}
-                    />
-
-                  </label>
+                    <label>
+                      Columns:
+                      <input
+                        type="number"
+                        name="cols"
+                        min="1"
+                        value={tileConfigs[index]?.cols || 4}
+                        onChange={(e) => handleTileConfigChange(index, "cols", parseInt(e.target.value))}
+                      />
+                    </label>
+                  </div>
 
 
                   <button
                     className="tile-button"
                     onClick={() => handleTileImage(url, index)}
+                    disabled={tiledImages[index]}
                   >
-                    {tiledImages[index] ? "Loading Tile Image..." : "Tile Image"}
+                    {tiledImages[index] ? (
+                      <>
+                        <span className="loading-spinner"></span>
+                        Loading Tile...
+                      </>
+                    ) : (
+                      "Tile Image"
+                    )}
                   </button>
                 </div>
               </div>
@@ -395,7 +416,6 @@ function App() {
                   type="button"
                   className="cancel-button"
                   onClick={() => setShowEditForm(false)}
-                  style={{ color: "white", margin: "10px", backgroundColor: "red" }}
                 >
                   Cancel
                 </button>
@@ -404,7 +424,14 @@ function App() {
                   className="submit-button"
                   disabled={editLoading}
                 >
-                  {editLoading ? "Editing..." : "Submit"}
+                  {editLoading ? (
+                    <>
+                      <span className="loading-spinner"></span>
+                      Editing...
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
               </div>
             </form>
