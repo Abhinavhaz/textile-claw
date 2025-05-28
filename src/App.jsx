@@ -148,8 +148,8 @@ function App() {
       setTiledImages((prev) => ({ ...prev, [index]: true }))
       const formData = new FormData();
       formData.append("image", imageUrl); // Send URL directly
-      formData.append("rows", tileConfigs[index]?.rows?.toString() || "3");
-      formData.append("cols", tileConfigs[index]?.cols?.toString() || "4");
+      formData.append("rows", tileConfigs[index]?.rows?.toString() || "");
+      formData.append("cols", tileConfigs[index]?.cols?.toString() || "");
 
 
       const response = await fetch("https://textile-image-backend.onrender.com/api/tile_image_grid", {
@@ -342,7 +342,8 @@ function App() {
                         type="number"
                         name="rows"
                         min="1"
-                        value={tileConfigs[index]?.rows || 3}
+                        required
+                        value={tileConfigs[index]?.rows || ""}
                         onChange={(e) => handleTileConfigChange(index, "rows", parseInt(e.target.value))}
                       />
                     </label>
@@ -353,7 +354,8 @@ function App() {
                         type="number"
                         name="cols"
                         min="1"
-                        value={tileConfigs[index]?.cols || 4}
+                        required
+                        value={tileConfigs[index]?.cols || ""}
                         onChange={(e) => handleTileConfigChange(index, "cols", parseInt(e.target.value))}
                       />
                     </label>
