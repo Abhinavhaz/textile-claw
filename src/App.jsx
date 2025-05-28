@@ -24,7 +24,8 @@ function App() {
   const [showEditForm, setShowEditForm] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
-  const [tileConfig, setTileConfig] = useState({ rows: 3, cols: 4 });
+  const [tileConfigs, setTileConfigs] = useState({});
+
   const [tiledImages, setTiledImages] = useState({}); // new state
 
 
@@ -141,14 +142,15 @@ function App() {
     setShowEditForm(true);
   };
 
-  const handleTileImage = async (imageUrl,index) => {
+  const handleTileImage = async (imageUrl, index) => {
     try {
 
-     setTiledImages((prev)=>({...prev,[index]:true}))
+      setTiledImages((prev) => ({ ...prev, [index]: true }))
       const formData = new FormData();
       formData.append("image", imageUrl); // Send URL directly
-      formData.append("rows", tileConfig.rows.toString());
-      formData.append("cols", tileConfig.cols.toString());
+      formData.append("rows", tileConfigs[index]?.rows?.toString() || "3");
+      formData.append("cols", tileConfigs[index]?.cols?.toString() || "4");
+
 
       const response = await fetch("https://textile-image-backend.onrender.com/api/tile_image_grid", {
         method: "POST",
@@ -162,11 +164,11 @@ function App() {
       const data = await response.json();
       const tiledImageUrl = data.filename;
       window.open(tiledImageUrl, "_blank");
-      
+
     } catch (err) {
       alert("Failed to tile image: " + err.message);
-    }finally{
-      setTiledImages((prev)=>({...prev,[index]:false}))
+    } finally {
+      setTiledImages((prev) => ({ ...prev, [index]: false }))
     }
   };
 
@@ -189,6 +191,15 @@ function App() {
     }
   };
 
+  const handleTileConfigChange = (index, key, value) => {
+    setTileConfigs((prev) => ({
+      ...prev,
+      [index]: {
+        ...prev[index],
+        [key]: value
+      }
+    }));
+  };
 
   return (
     <div className="container">
@@ -314,29 +325,33 @@ function App() {
                   </button>
 
                   <label>Rows:
-                  <input
-                    type="number"
-                    name="rows"
-                    min="1"
-                    value={tileConfig.rows}
-                    onChange={(e) => setTileConfig({ ...tileConfig, rows: e.target.value })}
-                  /></label>
+                    <input
+                      type="number"
+                      name="rows"
+                      min="1"
+                      value={tileConfigs[index]?.rows || 3}
+                      onChange={(e) => handleTileConfigChange(index, "rows", parseInt(e.target.value))}
+                    />
+
+                  </label>
 
                   <label>Columns:
-                  <input
-                    type="number"
-                    name="cols"
-                    min="1"
-                    value={tileConfig.cols}
-                    onChange={(e) => setTileConfig({ ...tileConfig, cols: e.target.value })}
-                  /></label>
+                    <input
+                      type="number"
+                      name="cols"
+                      min="1"
+                      value={tileConfigs[index]?.cols || 4}
+                      onChange={(e) => handleTileConfigChange(index, "cols", parseInt(e.target.value))}
+                    />
+
+                  </label>
 
 
                   <button
                     className="tile-button"
-                    onClick={() => handleTileImage(url,index)}
+                    onClick={() => handleTileImage(url, index)}
                   >
-             {tiledImages[index] ? "Loading Tile Image..." : "Tile Image"}
+                    {tiledImages[index] ? "Loading Tile Image..." : "Tile Image"}
                   </button>
                 </div>
               </div>
@@ -380,7 +395,7 @@ function App() {
                   type="button"
                   className="cancel-button"
                   onClick={() => setShowEditForm(false)}
-                  style={{color:"white",margin:"10px",backgroundColor:"red"}}
+                  style={{ color: "white", margin: "10px", backgroundColor: "red" }}
                 >
                   Cancel
                 </button>
